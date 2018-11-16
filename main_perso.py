@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 import matplotlib.pylab as pylab
 import seaborn as sns
 
-raw_training_df = pd.read_csv('Kaggle_data/train.csv', delimiter = ',')
-raw_testing_df = pd.read_csv('Kaggle_data/test.csv', delimiter = ',')
+raw_training_df = pd.read_csv('kaggle_data/train.csv', delimiter = ',')
+raw_testing_df = pd.read_csv('kaggle_data/test.csv', delimiter = ',')
 
 ## Feature engineering
 
