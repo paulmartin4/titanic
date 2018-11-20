@@ -79,3 +79,44 @@ for data in df:
     data['Title_Code'] = le.fit_transform(data.Title)
     data['FareRange_Code'] = le.fit_transform(data.FareRange)
     data['AgeRange_Code'] = le.fit_transform(data.AgeRange)
+
+# Bon en fait visiblement ça marche pas comme je voulais, utiliser la fonction get_dummies de panda (https://pandas.pydata.org/pandas-docs/stable/generated/pandas.get_dummies.html)
+# Et visiblement on pouvait pas modifier directement le dataframe de base, il fallait mettre le résultat dans un nouveau
+# Mais voilà je pense que ça sera mieux de faire l'apprentissage avec ça
+training_df_dummy = pd.get_dummies(training_df[cols])
+testing_df_dummy = pd.get_dummies(testing_df[cols])
+data_dummy = [training_df_dummy, testing_df_dummy]
+
+# Comme ça on a direct traing_df_dummy sans Survived, et une Series target
+target = training_df.Survived
+
+## Comparaison de classifiers, en s'aidant de https://scikit-learn.org/stable/auto_examples/classification/plot_classifier_comparison.html
+## Et en utilisant train_test_split, classifiers importes en debut de fichier
+
+names = ["Nearest Neighbors", "Linear SVM", "RBF SVM", "Gaussian Process",
+         "Decision Tree", "Random Forest", "Neural Net", "AdaBoost",
+         "Naive Bayes", "QDA"]
+
+classifiers = [
+    KNeighborsClassifier(3),
+    SVC(kernel="linear", C=0.025),
+    SVC(gamma=2, C=1),
+    GaussianProcessClassifier(1.0 * RBF(1.0)),
+    DecisionTreeClassifier(max_depth=5),
+    RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1),
+    MLPClassifier(alpha=1),
+    AdaBoostClassifier(),
+    GaussianNB(),
+    QuadraticDiscriminantAnalysis()]
+
+score_dict = {}
+for i in range(len(names)):
+    score_dict[names[i]] = 0.0
+
+X_train, X_test, y_train, y_test = train_test_split(training_df_dummy, target, test_size = .33)
+
+for name, clf in zip(names, classifiers):
+    clf.fit(X_train, y_train)
+    score_dict[name] = clf.score(X_test, y_test)
+    
+print(score_dict)
