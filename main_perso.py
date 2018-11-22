@@ -1,8 +1,22 @@
 import pandas as pd
 import numpy as np
 
+# Plein de classifiers à tester (https://scikit-learn.org/stable/auto_examples/classification/plot_classifier_comparison.html)
+
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.datasets import make_moons, make_circles, make_classification
 from sklearn.neural_network import MLPClassifier
-from sklearn.ensemble import AdaBoostClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.gaussian_process import GaussianProcessClassifier
+from sklearn.gaussian_process.kernels import RBF
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
+
+from sklearn.preprocessing import LabelEncoder
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.pylab as pylab
@@ -73,13 +87,17 @@ from sklearn.preprocessing import LabelEncoder
 
 le = LabelEncoder()
 
+
+# Colonnes à modifier
+cols = ['Sex','Pclass', 'Embarked', 'Title','SibSp', 'Parch', 'Age', 'Fare', 'FamilySize', 'IsAlone']
+
 for data in df:
-    data['SexeCode'] = le.fit_transform(data.Sex)
+    data['Sex_Code'] = le.fit_transform(data.Sex)
     data['Embarked_Code'] = le.fit_transform(data.Embarked)
     data['Title_Code'] = le.fit_transform(data.Title)
     data['FareRange_Code'] = le.fit_transform(data.FareRange)
     data['AgeRange_Code'] = le.fit_transform(data.AgeRange)
-
+    
 # Bon en fait visiblement ça marche pas comme je voulais, utiliser la fonction get_dummies de panda (https://pandas.pydata.org/pandas-docs/stable/generated/pandas.get_dummies.html)
 # Et visiblement on pouvait pas modifier directement le dataframe de base, il fallait mettre le résultat dans un nouveau
 # Mais voilà je pense que ça sera mieux de faire l'apprentissage avec ça
@@ -97,6 +115,8 @@ names = ["Nearest Neighbors", "Linear SVM", "RBF SVM", "Gaussian Process",
          "Decision Tree", "Random Forest", "Neural Net", "AdaBoost",
          "Naive Bayes", "QDA"]
 
+classifiers_comparison = pd.DataFrame(columns = names)
+
 classifiers = [
     KNeighborsClassifier(3),
     SVC(kernel="linear", C=0.025),
@@ -111,12 +131,17 @@ classifiers = [
 
 score_dict = {}
 for i in range(len(names)):
-    score_dict[names[i]] = 0.0
+    score_dict[names[i]] = []
 
-X_train, X_test, y_train, y_test = train_test_split(training_df_dummy, target, test_size = .33)
-
-for name, clf in zip(names, classifiers):
-    clf.fit(X_train, y_train)
-    score_dict[name] = clf.score(X_test, y_test)
+df_temp = training_df_dummy['Sex_male', 'Sex_female']
     
-print(score_dict)
+X_train, X_test, y_train, y_test = train_test_split(df_temp, target, test_size = .33)
+
+rounds = 1
+
+for k in range(rounds):
+    for name, clf in zip(names, classifiers):
+        clf.fit(X_train, y_train)
+        score_dict[name] += [clf.score(X_test, y_test)]
+        
+alg_comparison = pd.DataFrame(score_dict)
