@@ -115,8 +115,6 @@ names = ["Nearest Neighbors", "Linear SVM", "RBF SVM", "Gaussian Process",
          "Decision Tree", "Random Forest", "Neural Net", "AdaBoost",
          "Naive Bayes", "QDA"]
 
-classifiers_comparison = pd.DataFrame(columns = names)
-
 classifiers = [
     KNeighborsClassifier(3),
     SVC(kernel="linear", C=0.025),
@@ -132,10 +130,8 @@ classifiers = [
 score_dict = {}
 for i in range(len(names)):
     score_dict[names[i]] = []
-
-df_temp = training_df_dummy['Sex_male', 'Sex_female']
     
-X_train, X_test, y_train, y_test = train_test_split(df_temp, target, test_size = .33)
+X_train, X_test, y_train, y_test = train_test_split(training_df_dummy, target, test_size = .33)
 
 rounds = 1
 
