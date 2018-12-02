@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import copy
 
 # Plein de classifiers à tester (https://scikit-learn.org/stable/auto_examples/classification/plot_classifier_comparison.html)
 
@@ -27,8 +28,8 @@ raw_testing_df = pd.read_csv('kaggle_data/test.csv', delimiter = ',')
 
 ## Feature engineering
 
-training_df = raw_training_df
-testing_df = raw_testing_df
+training_df = copy.deepcopy(raw_training_df)
+testing_df = copy.deepcopyt(raw_testing_df)
 
 df = [training_df, testing_df]
 
